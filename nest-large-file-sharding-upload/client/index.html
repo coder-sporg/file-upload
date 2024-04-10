@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nest 大文件分片上传</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <input id="fileInput" type="file" multiple />
+
+    <script>
+      const fileInputEl = document.getElementById('fileInput');
+
+      // 切片大小
+      const chunkSize = 20 * 1024;
+
+      fileInputEl.onchange = async function () {
+        const file = fileInputEl.files[0];
+
+        const chunks = [];
+        let startPos = 0;
+        // 分片
+        while (startPos < file.size) {
+          chunks.push(file.slice(startPos, startPos + chunkSize));
+          startPos += chunkSize;
+        }
+
+        // 随机字符串 生成文件名
+        const randomStr = Math.random().toString().slice(2, 8);
+
+        const tasks = [];
+        chunks.map((chunk, index) => {
+          const formData = new FormData();
+          // 对拿到的文件进行分片，然后单独上传每个分片，分片名字为文件名 + index。
+          formData.set('name', randomStr + '_' + file.name + '-' + index);
+          formData.append('files', chunk);
+
+          tasks.push(axios.post('/upload', formData, {
+            // onUploadProgress: (progressEvent) => {
+            //   console.log(`上传进度：${(progressEvent.loaded / progressEvent.total * 100).toFixed(2)}%`);
+            // }
+          }));
+        });
+
+        await Promise.all(tasks); // 并发上传
+        axios.get(`/merge?name=${randomStr}_${file.name}`)
+      };
+    </script>
+  </body>
+</html>

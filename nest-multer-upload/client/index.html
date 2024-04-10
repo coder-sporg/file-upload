@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nest 文件上传</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <input id="fileInput" type="file" multiple>
+
+    <script>
+        const fileInputEl = document.getElementById('fileInput');
+
+        async function uploadSingleFile(file) {
+            const formData = new FormData();
+            formData.set('name', 'ys');
+            formData.set('age', 18);
+            formData.set('file', file.target.files[0]);
+
+            try {
+                const res = await axios.post('/upload-single', formData, {
+                    headers: { 'content-type': 'multipart/form-data' }
+                })
+                console.log('res: ', res);
+            } catch (error) {
+                console.log('error: ', error);
+            }
+        }
+
+        async function upload2File(file) {
+            const formData = new FormData();
+            formData.set('name', 'ys');
+            formData.set('age', 18);
+            [...file.target.files].forEach(file => {
+                formData.append('file', file);
+            })
+
+            try {
+                const res = await axios.post('/upload-two', formData)
+                console.log('res: ', res);
+            } catch (error) {
+                console.log('error: ', error);
+            }
+        }
+
+        async function uploadMultipleFile(file) {
+            const formData = new FormData();
+            formData.set('name', 'ys');
+            formData.set('age', 18);
+            // 这里上传时 上传4个文件
+            formData.append('file1', file.target.files[0]);
+            formData.append('file1', file.target.files[1]);
+            formData.append('file2', file.target.files[2]);
+            formData.append('file2', file.target.files[3]);
+
+            try {
+                const res = await axios.post('/upload-multiple', formData)
+                console.log('res: ', res);
+            } catch (error) {
+                console.log('error: ', error);
+            }
+        }
+
+        async function uploadAnyFile(file) {
+            const formData = new FormData();
+            formData.set('name', 'ys');
+            formData.set('age', 18);
+            // 这里上传时 上传4个文件
+            formData.append('file1', file.target.files[0]);
+            formData.append('file2', file.target.files[1]);
+            formData.append('file3', file.target.files[2]);
+            formData.append('file4', file.target.files[3]);
+
+            try {
+                const res = await axios.post('/upload-any', formData)
+                console.log('res: ', res);
+            } catch (error) {
+                console.log('error: ', error);
+            }
+        }
+
+        async function uploadValidateFile(file) {
+            const formData = new FormData();
+            formData.set('name', 'ys');
+            formData.set('age', 18);
+            formData.append('file', file.target.files[0]);
+
+            try {
+                const res = await axios.post('/upload-validate', formData)
+                console.log('res: ', res);
+            } catch (error) {
+                console.log('error: ', error);
+            }
+        }
+
+        // 自定义文件校验
+        async function uploadValidateFile1(file) {
+            const formData = new FormData();
+            formData.set('name', 'ys');
+            formData.set('age', 18);
+            formData.append('file', file.target.files[0]);
+
+            try {
+                const res = await axios.post('/upload-validate1', formData)
+                console.log('res: ', res);
+            } catch (error) {
+                console.log('error: ', error);
+            }
+        }
+
+        // fileInputEl.onchange = uploadSingleFile
+        // fileInputEl.onchange = upload2File
+        // fileInputEl.onchange = uploadMultipleFile
+        // fileInputEl.onchange = uploadAnyFile
+        // fileInputEl.onchange = uploadValidateFile
+        fileInputEl.onchange = uploadValidateFile1
+    </script>
+</body>
+</html>
